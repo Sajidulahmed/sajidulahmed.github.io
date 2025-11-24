@@ -1,92 +1,81 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sajid — Test Payment Page</title>
+  <title>Sajid Test Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body{font-family:Inter,system-ui,Arial;margin:0;padding:24px;background:linear-gradient(180deg,#3b2bd6,#3bb7ff);color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}
-    .card{background:rgba(255,255,255,0.06);padding:28px;border-radius:12px;max-width:720px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.35)}
-    h1{margin:0 0 8px;font-size:22px}
-    p{margin:0 0 18px;opacity:.95}
-    .btn{display:inline-block;padding:12px 20px;border-radius:12px;border:0;background:#ffd24d;color:#051017;font-weight:700;cursor:pointer}
-    .note{margin-top:14px;font-size:13px;opacity:.9}
+    body{
+      margin:0;
+      padding:40px;
+      background:linear-gradient(180deg,#4b2bd6,#3bb7ff);
+      font-family:sans-serif;
+      color:white;
+      text-align:center;
+    }
+    button{
+      padding:16px 22px;
+      background:#ffcc00;
+      border:0;
+      border-radius:10px;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Test payment — Sajid</h1>
-    <p>यह पेज सिर्फ़ Step 10 के लिए टेस्ट पेमेंट initiate करने के लिए है. Open this page inside Pi Browser.</p>
 
-    <!-- Pay button -->
-    <button id="payTestBtn" class="btn">Pay 1π (Test)</button>
+  <h2>⭐ Test Payment — Sajid</h2>
+  <p>Ye page sirf Pi Browser me open hoga.<br>Test ke liye 1π payment try karein.</p>
 
-    <div class="note">
-      Open in Pi Browser → click Pay 1π → confirm in Pi popup.<br>
-      After success you will see an alert and console message.
-    </div>
-  </div>
+  <button id="payBtn">Pay 1π (Test)</button>
 
-  <script>
-    // Simple payment script — works only if Pi Browser exposes Pi.createPayment (or similar).
-    document.getElementById('payTestBtn').addEventListener('click', async function(){
-      // quick detect
-      if(typeof Pi === 'undefined' && typeof window.Pi === 'undefined'){
-        alert('Please open this page inside the Pi Browser (mobile). Payment only available there.');
-        return;
-      }
-      const piGlobal = window.Pi || Pi;
+  <p id="debug" style="margin-top:20px;opacity:0.8;font-size:14px;"></p>
 
-      // Payment payload (adjust amount or memo if you want)
-      const paymentData = {
-        amount: "1", // 1 π
-        memo: "Tastik / Sajid Step10 test payment",
-        metadata: { purpose: "step10-test", owner: "sajidulahmed" }
-      };
+<script>
+  // 🔍 Check Pi API available?
+  const debug = document.getElementById("debug");
+  if(window.Pi){
+    debug.innerText = "Pi API Found ✅ — Ready for payment";
+  } else {
+    debug.innerText = "Pi API NOT FOUND ❌ — Please open inside Pi Browser";
+  }
 
-      // Try common SDK flow, with fallbacks
-      try {
-        if(piGlobal.createPayment){
-          // new / common Pi Browser SDK method
-          piGlobal.createPayment(paymentData, {
-            onReadyForServerApproval(paymentId){
-              console.log("Ready for approval:", paymentId);
-            },
-            onReadyForServerCompletion(paymentId, txid){
-              console.log("Completed:", paymentId, txid);
-              alert("Payment completed ✓\nPayment ID: " + paymentId + (txid ? ("\nTx: "+txid) : ""));
-            },
-            onCancel(){
-              alert("Payment cancelled.");
-            },
-            onError(err){
-              console.error("Payment error:", err);
-              alert("Payment error: " + (err && err.message ? err.message : err));
-            }
-          });
-          return;
+  // 💳 Pay button
+  document.getElementById("payBtn").addEventListener("click", async () => {
+    if(!window.Pi){
+      alert("❌ Please open this page inside Pi Browser!");
+      return;
+    }
+
+    try {
+      const payment = await Pi.createPayment({
+        amount: 1,
+        memo: "Test Pay from Sajid",
+        metadata: { purpose: "step10" }
+      }, {
+        onReadyForServerApproval: function(paymentId){
+          console.log("READY:", paymentId);
+        },
+        onReadyForServerCompletion: function(paymentId){
+          console.log("COMPLETE:", paymentId);
+        },
+        onCancel: function(){
+          console.log("Payment cancelled");
+        },
+        onError: function(error){
+          console.log("ERROR:", error);
         }
+      });
 
-        // fallback: older Pi.requestSignature / openPayment pattern (very simple)
-        if(piGlobal.requestPayment){
-          // example alternative (some Pi Browsers have different API)
-          piGlobal.requestPayment(paymentData).then(res=>{
-            console.log("Payment res:", res);
-            alert("Payment finished (fallback).");
-          }).catch(e=>{
-            console.error(e);
-            alert("Payment failed (fallback).");
-          });
-          return;
-        }
+      alert("Payment success! 🎉");
+    } catch(err){
+      console.error(err);
+      alert("Payment failed ❌");
+    }
+  });
+</script>
 
-        // if no known method, show a friendly message
-        alert("Pi payment API not found in this browser. Ensure you are using Pi Browser (latest) and try again.");
-      } catch(err){
-        console.error(err);
-        alert("Unexpected error: " + (err.message || err));
-      }
-    });
-  </script>
 </body>
 </html>
