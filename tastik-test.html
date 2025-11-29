@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tastik Food — Test Pi Payment</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f5f7ff;
+      text-align:center;
+      padding:60px 20px;
+    }
+    .card{
+      background:#ffffff;
+      width:90%;
+      max-width:420px;
+      margin:auto;
+      padding:28px;
+      border-radius:14px;
+      box-shadow:0 4px 14px rgba(0,0,0,.08);
+    }
+    h2{margin:0;font-size:26px;}
+    p{opacity:.8;font-size:15px;}
+    .btn{
+      background:#5936F5;
+      color:#fff;
+      border:0;
+      padding:14px 22px;
+      border-radius:8px;
+      font-size:16px;
+      cursor:pointer;
+      width:100%;
+      margin-top:18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>🍔 Tastik Test Payment</h2>
+    <p>Click below to pay <b>1π (Testnet)</b><br/>
+       for Pi Checklist Step 10.</p>
+
+    <button id="payBtn" class="btn">Pay 1π (Test)</button>
+  </div>
+
+  <script>
+    document.getElementById("payBtn").onclick = async function () {
+      if (!window.Pi) {
+        alert("⚠ Please open this page inside Pi Browser to test payment.");
+        return;
+      }
+
+      try {
+        const payment = await Pi.createPayment({
+          amount: 1,
+          memo: "Tastik Food Demo Order",
+          metadata: { app: "Tastik", type: "payment-test" }
+        });
+
+        alert("✅ Payment initiated – confirm in Pi popup.");
+        console.log(payment);
+      } catch (err) {
+        alert("❌ Payment failed: " + err.message);
+        console.error(err);
+      }
+    };
+  </script>
+
+</body>
+</html>
