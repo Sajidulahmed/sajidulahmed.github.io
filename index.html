@@ -2,9 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>VoicePi – Test Payment</title>
+  <title>VoicePi – Option 10 Test</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
 <body style="font-family:sans-serif;text-align:center;padding:40px">
 
   <h2>VoicePi</h2>
@@ -14,7 +15,7 @@
     style="padding:15px 22px;
     font-size:16px;
     background:#6a1b9a;
-    color:white;
+    color:#fff;
     border:none;
     border-radius:8px">
     Support Creator – Pay 0.01 Pi
@@ -22,24 +23,37 @@
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
   <script>
-    Pi.init({ version: "2.0", sandbox: false });
+    window.onload = function () {
 
-    document.getElementById("pay").onclick = function () {
-      Pi.createPayment(
-        { amount: 0.01, memo: "VoicePi Option-10 Test" },
-        {
-          onReadyForServerApproval: function () {},
-          onReadyForServerCompletion: function () {
-            alert("Payment successful!");
+      if (!window.Pi) {
+        alert("Open this app via Pi Browser → Develop → Option-10 Start");
+        return;
+      }
+
+      Pi.init({ version: "2.0", sandbox: false });
+
+      document.getElementById("pay").onclick = function () {
+        Pi.createPayment(
+          {
+            amount: 0.01,
+            memo: "VoicePi Option-10 Verification"
           },
-          onCancel: function () {
-            alert("Payment cancelled");
-          },
-          onError: function () {
-            alert("Payment error");
+          {
+            onReadyForServerApproval: function (id) {
+              console.log("Approval ready", id);
+            },
+            onReadyForServerCompletion: function (id, txid) {
+              alert("Payment successful ✅ Option-10 complete");
+            },
+            onCancel: function () {
+              alert("Payment cancelled");
+            },
+            onError: function (err) {
+              alert("Payment error: " + JSON.stringify(err));
+            }
           }
-        }
-      );
+        );
+      };
     };
   </script>
 
