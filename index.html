@@ -1,169 +1,47 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>VoicePi — Landing</title>
-<meta name="description" content="PiVoice — share 30-second motivational voice notes on Pi Network." />
-
-<style>
-:root{
-  --bg1:#4b2bd6;
-  --bg2:#3bb7ff;
-  --card:#ffffff;
-  --accent:#fc4c30;
-  --muted:#f6f6f9;
-  --text:#0b1220;
-}
-
-/* layout */
-*{box-sizing:border-box}
-body{
-  margin:0; font-family:Inter,Arial;
-  background:linear-gradient(180deg,var(--bg1),var(--bg2));
-  color:var(--text); min-height:100vh;
-  display:flex; align-items:center; justify-content:center;
-  padding:32px;
-}
-
-.wrap{width:100%; max-width:920px; background:#fff; border-radius:18px;padding:28px;}
-
-/* Header */
-.hero{text-align:center;}
-h1{font-size:34px;margin:0 0 6px; line-height:1.1;}
-p.lead{opacity:.95; font-size:16px}
-
-/* CTA buttons */
-.cta-row{
-  display:flex; gap:12px; justify-content:center; margin-top:18px;
-}
-.btn{
-  padding:12px 18px;border-radius:8px; cursor:pointer;
-  font-weight:600; border:0;
-}
-.btn--primary{background:#4b2bd6;color:#fff;}
-.btn--ghost{background:transparent;border:1px solid #4b2bd6;color:#4b2bd6;}
-
-/* YouTube modal */
-.modal{
-  position:fixed; inset:0;display:none;
-  align-items:center; justify-content:center;
-  background:rgba(0,0,0,.7);
-}
-.modal.open{display:flex;}
-.modal iframe{
-  width:90%; max-width:680px; height:360px; background:#000;
-  border-radius:8px;
-}
-.close-btn{
-  position:absolute;top:12px;right:12px;
-  background:#fff;padding:6px 12px;border-radius:4px;font-weight:bold;
-}
-
-/* Noor Glow */
-.noor-img{width:180px;margin:auto; display:block;}
-.noor-img.intro{animation:introGlow 1.5s ease forwards;}
-.noor-img.pulse{animation:pulseGlow 5s ease infinite;}
-@keyframes introGlow{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
-@keyframes pulseGlow{
- 0%{transform:scale(1);filter:brightness(1)}
- 50%{transform:scale(1.06);filter:brightness(1.25)}
-100%{transform:scale(1);filter:brightness(1)}
-}
-
-footer{margin-top:28px;text-align:center;font-size:14px;opacity:.8;}
-
-</style>
+  <meta charset="UTF-8">
+  <title>VoicePi – Test Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body>
+<body style="font-family:sans-serif;text-align:center;padding:40px">
 
-<div class="wrap">
+  <h2>VoicePi</h2>
+  <p>Option-10 Verification Test</p>
 
-<!-- Noor Glowing Banner -->
-<img src="./20251013_081324.png" class="noor-img" alt="VoicePi Noor" />
+  <button id="pay"
+    style="padding:15px 22px;
+    font-size:16px;
+    background:#6a1b9a;
+    color:white;
+    border:none;
+    border-radius:8px">
+    Support Creator – Pay 0.01 Pi
+  </button>
 
-<div class="hero">
-<h1><strong>VoicePi</strong></h1>
-<p class="lead">A platform to share short motivational 30-second voice notes on the Pi Network 🚀</p>
-</div>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <script>
+    Pi.init({ version: "2.0", sandbox: false });
 
-<!-- CTA -->
-<div class="cta-row">
-<button class="btn btn--primary" id="openVideo">▶ Play Demo 30s</button>
-<button class="btn btn--ghost" id="openVideo2">▶ Watch Full Demo</button>
-</div>
-
-<!-- NEW PI PAYMENT BUTTON 🔥 -->
-<div class="cta-row">
-<button id="payBtn" class="btn btn--primary">Pay 1π (Test)</button>
-</div>
-
-<footer>©2025 — VoicePi | Built for Pi Hackathon 🔥</footer>
-</div>
-
-
-<!-- Modal -->
-<div class="modal" id="modal">
- <button class="close-btn" id="closeModal">X</button>
- <iframe id="ytFrame" src=""></iframe>
-</div>
-
-<script>
-// ------------------ YouTube Modal Logic ---------------------
-
-const SHORT = "dKhww-WgrjA";  // 30 sec demo
-const FULL  = "IYLyJPfYI0A"; // 3 min version
-
-const modal = document.getElementById('modal');
-const ytf   = document.getElementById('ytFrame');
-
-document.getElementById("openVideo") ?.addEventListener("click", ()=>open(SHORT));
-document.getElementById("openVideo2")?.addEventListener("click", ()=>open(FULL));
-document.getElementById("closeModal") ?.addEventListener("click",close);
-
-function open(id){
- modal.classList.add("open");
- ytf.src=`https://www.youtube.com/embed/${id}?autoplay=1`;
-}
-function close(){
- modal.classList.remove("open");
- ytf.src="";
-}
-
-// Noor Glow active
-setTimeout(()=> document.querySelector(".noor-img").classList.add("pulse"),2500);
-
-
-// ------------------ Pi Payment Integration 🔥 ---------------------
-
-(function(){
- const btn=document.getElementById('payBtn');
- if(!btn) return;
-
- async function pay(){
-   if(!window.Pi){
-     alert("Open inside Pi Browser to make payment");
-     return;
-   }
-
-   try{
-     const tx = await Pi.createPayment({
-       amount:1,
-       memo:"VoicePi Test Payment",
-       metadata:{app:"VoicePi",developer:"Sajid"}
-     });
-
-     alert("Payment Sent — approve in popup ✔");
-     console.log(tx);
-
-   }catch(e){
-     alert("Payment Failed: "+e.message);
-     console.error(e);
-   }
- }
- btn.addEventListener("click",pay);
-})();
-</script>
+    document.getElementById("pay").onclick = function () {
+      Pi.createPayment(
+        { amount: 0.01, memo: "VoicePi Option-10 Test" },
+        {
+          onReadyForServerApproval: function () {},
+          onReadyForServerCompletion: function () {
+            alert("Payment successful!");
+          },
+          onCancel: function () {
+            alert("Payment cancelled");
+          },
+          onError: function () {
+            alert("Payment error");
+          }
+        }
+      );
+    };
+  </script>
 
 </body>
 </html>
