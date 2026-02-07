@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TasTik.Food – Halal Food on Pi</title>
+  <title>TasTik.Food – Pi Testnet</title>
 
-  <!-- Pi SDK (REQUIRED) -->
+  <!-- Pi SDK -->
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-  <script>
-    Pi.init({ version: "2.0" });
-  </script>
 
   <style>
     body {
@@ -40,9 +37,9 @@
       background: #10b981;
       border: none;
       color: white;
-      padding: 12px 20px;
+      padding: 14px 24px;
       font-size: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
     }
     button:hover {
@@ -59,31 +56,56 @@
 <body>
   <div class="container">
     <img src="logo.png" alt="TasTik Logo" />
-
     <h1>TasTik.Food</h1>
     <p>
-      Watch halal food reels, discover local food creators,  
-      and support them using Pi.
+      Discover nearby halal food places and support local restaurants using Pi.
     </p>
 
-    <button onclick="loginWithPi()">Login with Pi</button>
+    <button onclick="payWithPi()">Support with Pi (Test)</button>
 
     <div class="note">
-      Pi Network Testnet App • No real payments
+      Pi Network Testnet App – No real Pi is used.
     </div>
   </div>
 
   <script>
-    async function loginWithPi() {
-      try {
-        const auth = await Pi.authenticate(
-          ["username", "payments"],
-          "TasTik login"
-        );
-        alert("Welcome " + auth.user.username);
-      } catch (err) {
-        alert("Pi login cancelled");
-      }
+    Pi.init({ version: "2.0", sandbox: true });
+
+    function payWithPi() {
+      Pi.authenticate(
+        ["username", "payments"],
+        "TasTik.Food Test Payment"
+      )
+        .then(() => {
+          return Pi.createPayment(
+            {
+              amount: 0.01,
+              memo: "TasTik Featured Listing Test",
+              metadata: {
+                app: "TasTik.Food",
+                purpose: "test_payment"
+              }
+            },
+            {
+              onReadyForServerApproval: function (paymentId) {
+                console.log("Ready for approval:", paymentId);
+              },
+              onReadyForServerCompletion: function (paymentId, txid) {
+                alert("Payment successful 🎉 Test-Pi received");
+              },
+              onCancel: function () {
+                alert("Payment cancelled");
+              },
+              onError: function (error) {
+                console.error(error);
+                alert("Payment failed");
+              }
+            }
+          );
+        })
+        .catch(() => {
+          alert("Pi authentication failed");
+        });
     }
   </script>
 </body>
