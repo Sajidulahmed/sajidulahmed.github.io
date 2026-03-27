@@ -2,10 +2,47 @@
 <html>
 <head>
   <title>TastikFood</title>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
+
 <body style="background:#0f172a; color:white; text-align:center; padding-top:50px;">
+
   <h1>🍔 TastikFood</h1>
-  <p>Welcome to my Pi App 🚀</p>
-  <button style="padding:10px 20px; font-size:18px;">Order Now</button>
+  <p>Order food using Pi 🚀</p>
+
+  <button onclick="payWithPi()" style="padding:12px 25px; font-size:18px;">
+    Pay 0.1 Pi
+  </button>
+
+  <script>
+    Pi.init({ version: "2.0", sandbox: true });
+
+    async function payWithPi() {
+      try {
+        const payment = await Pi.createPayment({
+          amount: 0.1,
+          memo: "Tastik Food Order 🍔",
+          metadata: { orderId: "1234" }
+        }, {
+          onReadyForServerApproval: function(paymentId) {
+            console.log("Ready for approval:", paymentId);
+          },
+          onReadyForServerCompletion: function(paymentId, txid) {
+            console.log("Completed:", paymentId, txid);
+          },
+          onCancel: function(paymentId) {
+            alert("Payment cancelled");
+          },
+          onError: function(error, payment) {
+            console.error(error);
+          }
+        });
+
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  </script>
+
 </body>
 </html>
