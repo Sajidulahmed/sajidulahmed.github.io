@@ -1,61 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>TastikFood</title>
-  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-</head>
+<script 
+src="https://sdk.minepi.com/pi-sdk.js"><
+/script>
 
-<body style="background:#0f172a; color:white; text-align:center; padding-top:50px;">
+<script>
+  Pi.init({ version: "2.0", sandbox: 
+true });
 
-  <h1>🍔 TastikFood</h1>
-  <p>Order food using Pi 🚀</p>
+  function setupPayment() {
+    const btn = 
+document.getElementById("payBtn");
 
-  <button id="payBtn">
-  Pay 0.1 Pi
-  </button>
+    if (!btn) {
+      setTimeout(setupPayment, 500); // 
+retry
+      return;
+    }
 
-  <script>
-  document.addEventListener("DOMContentLoaded", function () {
+    btn.onclick = async function () {
+      alert("Clicked ✅");
 
-    Pi.init({ version: "2.0", sandbox:true });
+      try {
+        await Pi.createPayment({
+          amount: 0.1,
+          memo: "Tastik Food Order 🍔",
+          metadata: { orderId: "1234" }
+        }, {
+          onReadyForServerApproval: 
+function(paymentId) {
+            return true;
+           },
+          onReadyForServerCompletion: 
+function(paymentId, txid) {
+            alert("Payment Done ✅");
+            return true;
+          },
+          onCancel: function(paymentId) {
+            alert("Cancelled ❌");
+          },
+          onError: function(error) {
+            console.error(error);
+            alert("Error ⚠️");
+          }
+        });
 
-  document.getElementById("payBtn").addEventLi
-  stener("click", async function () {
+      } catch (e) {
+        console.error(e);
+      }
+    };
+  }
 
-         alert("Button clicked ✅"); // test
-
-         try {
-           await Pi.createPayment({
-             amount: 0.1,
-             memo: "Tastik Food Order 🍔",
-             metadata: { orderId: "1234" }
-           }, {
-             onReadyForServerApproval: 
-   function(paymentId) {
-               return true;
-             },
-             onReadyForServerCompletion: 
-   function(paymentId, txid) {
-               alert("Payment Done ✅");
-               return true;
-             },
-             onCancel: function(paymentId) {
-               alert("Cancelled ❌");
-             },
-             onError: function(error) {
-               console.error(error);
-               alert("Error ⚠️");
-             }
-           });
-
-         } catch (e) {
-           console.error(e);
-         }
-
-       });
-
-     });
-   </script>
-
-</body>
-</html>
+  setupPayment();
+</script>
