@@ -1,53 +1,91 @@
-<script 
-src="https://sdk.minepi.com/pi-sdk.js"><
-/script>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TastikFood</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <style>
+    body { margin:0; font-family: Arial; background:#0f172a; color:white; }
+    .screen { display:none; padding:20px; }
+    .active { display:block; }
+    .nav { position:fixed; bottom:0; width:100%; background:#111; display:flex; justify-content:space-around; padding:10px 0; }
+    .nav button { background:none; border:none; color:white; font-size:16px; }
+    .card { background:#1e293b; padding:15px; margin:10px 0; border-radius:10px; }
+    button.pay { padding:12px 20px; font-size:16px; margin-top:20px; }
+  </style>
+</head>
 
+<body>
+  
+<!-- Home -->
+<div id="home" class="screen active">
+  <h2>🍔 TastikFood</h2>
+  <div class="card" onclick="go('restaurant')">Halal Burger - 0.1 Pi</div>
+  <div class="card" onclick="go('restaurant')">Chicken Roll - 0.08 Pi</div>
+</div><
+ 
+<!-- Restaurant -->
+<div id="restaurant" class="screen">
+  <h2>Menu</h2>
+  <div class="card">Burger - 0.1 Pi</div>
+  <button onclick="go('payment')">Order Now</button>
+</div>
+
+<!-- Payment -->
+<div id="payment" class="screen">
+  <h2>Payment</h2>
+  <p>Order: Burger</p>
+  <button id="payBtn" class="pay">Pay 0.1 Pi</button>
+</div>
+  
+<!-- Profile -->
+<div id="profile" class="screen">
+  <h2>Profile</h2>
+  <p>Welcome, Pioneer 👋</p>
+</div>
+  
+<!-- Bottom Nav -->
+<div class="nav">
+  <button onclick="go('home')">Home</button>
+  <button onclick="go('restaurant')">Menu</button>
+  <button onclick="go('payment')">Pay</button>
+  <button onclick="go('profile')">Profile</button>
+</div>
+  
 <script>
-  Pi.init({ version: "2.0", sandbox: 
-true });
-
-  function setupPayment() {
-    const btn = 
-document.getElementById("payBtn");
-
-    if (!btn) {
-      setTimeout(setupPayment, 500); // 
-retry
-      return;
-    }
-
-    btn.onclick = async function () {
-      alert("Clicked ✅");
-
-      try {
-        await Pi.createPayment({
-          amount: 0.1,
-          memo: "Tastik Food Order 🍔",
-          metadata: { orderId: "1234" }
-        }, {
-          onReadyForServerApproval: 
-function(paymentId) {
-            return true;
-           },
-          onReadyForServerCompletion: 
-function(paymentId, txid) {
-            alert("Payment Done ✅");
-            return true;
-          },
-          onCancel: function(paymentId) {
-            alert("Cancelled ❌");
-          },
-          onError: function(error) {
-            console.error(error);
-            alert("Error ⚠️");
-          }
-        });
-
-      } catch (e) {
-        console.error(e);
-      }
-    };
+  function go(screen) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screen).classList.add('active');
   }
 
-  setupPayment();
+  Pi.init({ version: "2.0", sandbox: true });
+
+  document.getElementById("payBtn").onclick = async function () {
+    alert("Clicked ✅");
+
+    try {
+      await Pi.createPayment({
+        amount: 0.1,
+        memo: "Tastik Food Order 🍔",
+        metadata: { orderId: "1234" }
+      }, {
+        onReadyForServerApproval: function(paymentId) { return true; },
+        onReadyForServerCompletion: function(paymentId, txid) {
+          alert("Payment Done ✅");
+          return true;
+        },
+        onCancel: function() { alert("Cancelled ❌"); },
+        onError: function(error) {
+          console.error(error);
+          alert("Error ⚠️");
+        }
+      });
+
+    } catch (e) {
+      console.error(e);
+    }
+  };
 </script>
+
+</body>
+</html>
