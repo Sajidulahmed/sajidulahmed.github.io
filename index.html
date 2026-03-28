@@ -25,10 +25,11 @@
           metadata: { orderId: "1234" }
         }, {
           onReadyForServerApproval: function(paymentId) {
-            console.log("Ready for approval:", paymentId);
+          return true;
           },
           onReadyForServerCompletion: function(paymentId, txid) {
-            console.log("Completed:", paymentId, txid);
+          alert("Payment Done ✅");
+          return true;
           },
           onCancel: function(paymentId) {
             alert("Payment cancelled");
